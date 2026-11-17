@@ -21,11 +21,23 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'WPSG_VERSION', '1.0.0' );
-define( 'WPSG_PLUGIN_FILE', __FILE__ );
-define( 'WPSG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
-define( 'WPSG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'WPSG_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+$wpsg_main_file = defined( 'WPSG_ROOT_FILE' ) ? WPSG_ROOT_FILE : __FILE__;
+
+if ( ! defined( 'WPSG_VERSION' ) ) {
+	define( 'WPSG_VERSION', '1.0.0' );
+}
+if ( ! defined( 'WPSG_PLUGIN_FILE' ) ) {
+	define( 'WPSG_PLUGIN_FILE', $wpsg_main_file );
+}
+if ( ! defined( 'WPSG_PLUGIN_DIR' ) ) {
+	define( 'WPSG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
+}
+if ( ! defined( 'WPSG_PLUGIN_URL' ) ) {
+	define( 'WPSG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+}
+if ( ! defined( 'WPSG_PLUGIN_BASENAME' ) ) {
+	define( 'WPSG_PLUGIN_BASENAME', plugin_basename( $wpsg_main_file ) );
+}
 
 // 1. Core Framework Includes.
 require_once WPSG_PLUGIN_DIR . 'includes/class-wpsg-loader.php';
@@ -71,8 +83,8 @@ require_once WPSG_PLUGIN_DIR . 'modules/monitoring/server-info-hider.php';
 /**
  * Register activation and deactivation hooks.
  */
-register_activation_hook( __FILE__, array( 'WPSG_Activator', 'activate' ) );
-register_deactivation_hook( __FILE__, array( 'WPSG_Deactivator', 'deactivate' ) );
+register_activation_hook( $wpsg_main_file, array( 'WPSG_Activator', 'activate' ) );
+register_deactivation_hook( $wpsg_main_file, array( 'WPSG_Deactivator', 'deactivate' ) );
 
 /**
  * Class WP_Secure_Guard
