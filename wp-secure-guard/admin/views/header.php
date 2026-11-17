@@ -36,6 +36,16 @@ $nav_tabs = array(
 			</div>
 		</div>
 		<div class="wpsg-top-actions">
+			<?php
+			$check_updates_url = wp_nonce_url(
+				add_query_arg( array( 'page' => $current_page, 'wpsg_action' => 'check_updates' ), admin_url( 'admin.php' ) ),
+				'wpsg_manual_update_check'
+			);
+			?>
+			<a href="<?php echo esc_url( $check_updates_url ); ?>" class="button button-secondary" title="<?php esc_attr_e( 'Check GitHub for WP Secure Guard Updates', 'wp-secure-guard' ); ?>">
+				<span class="dashicons dashicons-update" style="vertical-align:text-bottom;margin-right:3px;"></span>
+				<?php esc_html_e( 'Check for Updates', 'wp-secure-guard' ); ?>
+			</a>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=wpsg-activity-logs' ) ); ?>" class="button button-secondary">
 				<span class="dashicons dashicons-visibility" style="vertical-align:text-bottom;margin-right:3px;"></span>
 				<?php esc_html_e( 'View Activity Log', 'wp-secure-guard' ); ?>
@@ -46,6 +56,38 @@ $nav_tabs = array(
 			</a>
 		</div>
 	</div>
+
+	<?php
+	// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+	if ( isset( $_GET['wpsg_updated_checked'] ) ) :
+	?>
+		<div class="notice notice-info is-dismissible wpsg-notice">
+			<p><strong><?php esc_html_e( 'Update Check Complete:', 'wp-secure-guard' ); ?></strong> <?php esc_html_e( 'Checked GitHub repository for releases. You are on the latest version or any new release is listed below.', 'wp-secure-guard' ); ?></p>
+		</div>
+	<?php endif; ?>
+
+	<?php
+	$remote_info = WPSG_Updater::get_remote_version_info();
+	if ( ! empty( $remote_info['version'] ) && version_compare( $remote_info['version'], WPSG_VERSION, '>' ) ) :
+	?>
+		<div class="notice notice-warning is-dismissible wpsg-notice" style="border-left-color: #d63638; background: #fff8f8; padding: 12px 16px;">
+			<p style="margin: 0; font-size: 14px;">
+				<span class="dashicons dashicons-warning" style="color: #d63638; vertical-align: text-bottom; margin-right: 6px;"></span>
+				<strong><?php esc_html_e( 'New Version Available for WP Secure Guard!', 'wp-secure-guard' ); ?></strong>
+				<?php
+				printf(
+					/* translators: 1: Current version, 2: New version */
+					esc_html__( 'Installed: v%1$s &rarr; Latest: v%2$s.', 'wp-secure-guard' ),
+					esc_html( WPSG_VERSION ),
+					'<strong>' . esc_html( $remote_info['version'] ) . '</strong>'
+				);
+				?>
+				<a href="<?php echo esc_url( admin_url( 'plugins.php' ) ); ?>" class="button button-primary" style="margin-left: 12px;">
+					<?php esc_html_e( 'Update Now (Plugins Page)', 'wp-secure-guard' ); ?>
+				</a>
+			</p>
+		</div>
+	<?php endif; ?>
 
 	<?php if ( ! empty( $notice ) ) : ?>
 		<?php if ( 'saved' === $notice ) : ?>

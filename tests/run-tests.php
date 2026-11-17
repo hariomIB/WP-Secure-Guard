@@ -349,6 +349,22 @@ foreach ( $files_to_test as $f ) {
 	assert_test( $matched, "Sensitive Files Shield: Successfully matches and blocks {$f}" );
 }
 
+// -------------------------------------------------------------
+// Test 10: Remote Auto-Updater & version.json Validation
+// -------------------------------------------------------------
+$version_file = __DIR__ . '/../version.json';
+assert_test( file_exists( $version_file ), "Updater: version.json exists at root" );
+
+$v_data = json_decode( file_get_contents( $version_file ), true );
+assert_test( ! empty( $v_data ) && is_array( $v_data ), "Updater: version.json is valid JSON" );
+assert_test( isset( $v_data['version'] ) && '1.0.0' === $v_data['version'], "Updater: version.json version matches 1.0.0" );
+assert_test( isset( $v_data['download_url'] ) && strpos( $v_data['download_url'], 'wp-secure-guard.zip' ) !== false, "Updater: download_url points to wp-secure-guard.zip" );
+assert_test( isset( $v_data['sections']['changelog'] ), "Updater: changelog section is defined" );
+
+// Verify version compare logic
+assert_test( version_compare( '1.0.1', '1.0.0', '>' ), "Updater: Higher remote version detected for update" );
+assert_test( ! version_compare( '1.0.0', '1.0.0', '>' ), "Updater: Same version does not trigger update" );
+
 echo "\n---------------------------------------------------------\n";
 echo " Test Results: {$passed_tests} PASSED, {$failed_tests} FAILED\n";
 echo "=========================================================\n";

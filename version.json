@@ -1,0 +1,17 @@
+{
+  "name": "WP Secure Guard",
+  "slug": "wp-secure-guard",
+  "version": "1.0.0",
+  "author": "WP Secure Guard Team",
+  "author_homepage": "https://github.com/hariomIB/WP-Secure-Guard",
+  "homepage": "https://github.com/hariomIB/WP-Secure-Guard",
+  "requires": "5.8",
+  "tested": "6.5",
+  "requires_php": "7.4",
+  "last_updated": "2026-11-17",
+  "download_url": "https://github.com/hariomIB/WP-Secure-Guard/releases/latest/download/wp-secure-guard.zip",
+  "sections": {
+    "description": "Advanced modular WordPress security suite featuring User Enumeration Protection, Brute-Force Rate Limiting, Custom Login URL, Native TOTP 2FA, XML-RPC Shield, WAF Firewall, Sensitive File Protection, and Activity Logs.",
+    "changelog": "<h4>1.0.0</h4><ul><li>Initial stable release with 20 modular security protections.</li><li>Custom Login URL & Direct Endpoint Blocking.</li><li>Sensitive File Protection & Directory Listing Shield.</li><li>Remote Auto-Updater integrated.</li></ul>"
+  }
+}

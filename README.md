@@ -3,7 +3,7 @@
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-%3E%3D%205.8-blue.svg)](https://wordpress.org/)
 [![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%207.4-8892BF.svg)](https://php.net/)
-[![Tests](https://img.shields.io/badge/Tests-57%2F57%20Passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-64%2F64%20Passing-brightgreen.svg)](tests/)
 
 **WP Secure Guard** is an advanced, lightweight, modular WordPress security suite designed to protect websites against brute-force attacks, unauthorized user enumeration, malicious file uploads, information disclosure, and web exploits—without cloud lock-in, bloat, or third-party telemetry.
 
@@ -138,6 +138,25 @@ To create a 100% compliant ZIP package enforcing standard UNIX forward-slashes (
 ```bash
 php build-zip.php
 ```
+
+---
+
+## 🔄 Automatic Remote Updates Across All Client Websites
+
+WP Secure Guard includes a built-in **Remote Auto-Updater** (`WPSG_Updater`) that connects to your GitHub repository or custom update server.
+
+Whenever you install WP Secure Guard on any website, that site will automatically check for new releases and display native WordPress update notifications (`There is a new version of WP Secure Guard available`). Site administrators can update with a single click from their WordPress dashboard!
+
+### How to Release an Update:
+1. **Update Version:** Bump the version string in `wp-secure-guard/wp-secure-guard.php` (e.g. `1.0.1`) and in `version.json`.
+2. **Build the ZIP:** Run `php build-zip.php`.
+3. **Commit & Push:** Commit your changes to git and push to GitHub `main`.
+4. **Create a GitHub Release:**
+   * Go to your repository &rarr; **Releases** &rarr; **Draft a new release**.
+   * Tag version: `v1.0.1`.
+   * Attach `wp-secure-guard.zip` as a Release binary asset.
+   * Click **Publish release**.
+5. **Instant Distribution:** All connected WordPress sites will automatically detect the new version (or admins can click "Check for Updates" in their WP Secure Guard dashboard), display the WordPress update notice, and update in 1-click!
 
 ---
 

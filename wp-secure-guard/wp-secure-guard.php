@@ -34,6 +34,7 @@ require_once WPSG_PLUGIN_DIR . 'includes/class-wpsg-deactivator.php';
 require_once WPSG_PLUGIN_DIR . 'includes/class-wpsg-settings.php';
 require_once WPSG_PLUGIN_DIR . 'includes/class-wpsg-logger.php';
 require_once WPSG_PLUGIN_DIR . 'includes/class-wpsg-dashboard.php';
+require_once WPSG_PLUGIN_DIR . 'includes/class-wpsg-updater.php';
 
 // 2. User Protection Modules (Features 1-5).
 require_once WPSG_PLUGIN_DIR . 'modules/user-enumeration/author-enumeration.php';
@@ -166,6 +167,9 @@ final class WP_Secure_Guard {
 		WPSG_PHP_Hardening::init();
 		WPSG_Version_Hider::init();
 		WPSG_Server_Info_Hider::init();
+
+		// Remote Auto-Updater
+		WPSG_Updater::init();
 
 		// Admin UI coordinator
 		if ( is_admin() ) {
