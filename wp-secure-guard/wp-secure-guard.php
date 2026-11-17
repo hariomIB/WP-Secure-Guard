@@ -12,7 +12,7 @@
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Text Domain:       wp-secure-guard
  * Domain Path:       /languages
- *
+ *i love you 
  * @package WP_Secure_Guard
  */
 
