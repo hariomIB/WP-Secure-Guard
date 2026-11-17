@@ -7,16 +7,16 @@
 
 // Define mock ABSPATH
 if ( ! defined( 'ABSPATH' ) ) {
-	define( 'ABSPATH', __DIR__ . '/../wp-secure-guard/' );
+	define( 'ABSPATH', __DIR__ . '/../' );
 }
 if ( ! defined( 'WPINC' ) ) {
 	define( 'WPINC', 'wp-includes' );
 }
 if ( ! defined( 'WP_CONTENT_DIR' ) ) {
-	define( 'WP_CONTENT_DIR', __DIR__ . '/../wp-secure-guard/wp-content' );
+	define( 'WP_CONTENT_DIR', __DIR__ . '/../wp-content' );
 }
 if ( ! defined( 'WP_PLUGIN_DIR' ) ) {
-	define( 'WP_PLUGIN_DIR', __DIR__ . '/../wp-secure-guard' );
+	define( 'WP_PLUGIN_DIR', __DIR__ . '/..' );
 }
 if ( ! defined( 'DAY_IN_SECONDS' ) ) {
 	define( 'DAY_IN_SECONDS', 86400 );
@@ -134,18 +134,18 @@ if ( ! function_exists( 'update_option' ) ) {
 }
 
 // Require needed modules
-require_once __DIR__ . '/../wp-secure-guard/includes/class-wpsg-settings.php';
-require_once __DIR__ . '/../wp-secure-guard/includes/class-wpsg-logger.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/login-security/two-factor.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/login-security/common-usernames.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/login-security/login-limiter.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/file-security/uploads-protection.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/file-security/sensitive-files.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/login-security/custom-login-url.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/login-security/user-registration.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/monitoring/php-hardening.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/monitoring/version-hider.php';
-require_once __DIR__ . '/../wp-secure-guard/modules/monitoring/server-info-hider.php';
+require_once __DIR__ . '/../includes/class-wpsg-settings.php';
+require_once __DIR__ . '/../includes/class-wpsg-logger.php';
+require_once __DIR__ . '/../modules/login-security/two-factor.php';
+require_once __DIR__ . '/../modules/login-security/common-usernames.php';
+require_once __DIR__ . '/../modules/login-security/login-limiter.php';
+require_once __DIR__ . '/../modules/file-security/uploads-protection.php';
+require_once __DIR__ . '/../modules/file-security/sensitive-files.php';
+require_once __DIR__ . '/../modules/login-security/custom-login-url.php';
+require_once __DIR__ . '/../modules/login-security/user-registration.php';
+require_once __DIR__ . '/../modules/monitoring/php-hardening.php';
+require_once __DIR__ . '/../modules/monitoring/version-hider.php';
+require_once __DIR__ . '/../modules/monitoring/server-info-hider.php';
 
 $passed_tests = 0;
 $failed_tests = 0;

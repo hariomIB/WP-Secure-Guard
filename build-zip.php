@@ -6,7 +6,7 @@
  * ensuring seamless installation on WordPress on all operating systems (Linux, macOS, Windows).
  */
 
-$source_dir = __DIR__ . '/wp-secure-guard';
+$source_dir = __DIR__;
 $zip_file   = __DIR__ . '/wp-secure-guard.zip';
 
 if ( file_exists( $zip_file ) ) {
@@ -20,6 +20,16 @@ if ( $zip->open( $zip_file, ZipArchive::CREATE | ZipArchive::OVERWRITE ) !== tru
     exit(1);
 }
 
+// Elements to exclude from production release zip
+$exclude_patterns = array(
+    '^\.git',
+    '^\.gitignore$',
+    '^tests',
+    '^build-zip',
+    '^wp-secure-guard\.zip$',
+    '^README\.md$',
+);
+
 $files = new RecursiveIteratorIterator(
     new RecursiveDirectoryIterator( $source_dir, RecursiveDirectoryIterator::SKIP_DOTS ),
     RecursiveIteratorIterator::SELF_FIRST
@@ -29,12 +39,21 @@ $file_count = 0;
 
 foreach ( $files as $file ) {
     $real_path = $file->getRealPath();
-    
-    // Relative path starting with 'wp-secure-guard/'
-    $relative_path = 'wp-secure-guard/' . substr( $real_path, strlen( $source_dir ) + 1 );
-    
-    // CRITICAL: ZIP specification mandates forward slashes (/) only!
-    $zip_path = str_replace( '\\', '/', $relative_path );
+    $relative  = str_replace( '\\', '/', substr( $real_path, strlen( $source_dir ) + 1 ) );
+
+    // Check exclusion patterns
+    $skip = false;
+    foreach ( $exclude_patterns as $pattern ) {
+        if ( preg_match( '#' . $pattern . '#i', $relative ) ) {
+            $skip = true;
+            break;
+        }
+    }
+    if ( $skip ) {
+        continue;
+    }
+
+    $zip_path = 'wp-secure-guard/' . $relative;
 
     if ( $file->isDir() ) {
         $zip->addEmptyDir( rtrim( $zip_path, '/' ) . '/' );
