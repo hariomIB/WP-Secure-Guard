@@ -1,17 +1,17 @@
 {
   "name": "WP Secure Guard",
   "slug": "wp-secure-guard",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": "WP Secure Guard Team",
   "author_homepage": "https://github.com/hariomIB/WP-Secure-Guard",
   "homepage": "https://github.com/hariomIB/WP-Secure-Guard",
   "requires": "5.8",
   "tested": "6.5",
   "requires_php": "7.4",
-  "last_updated": "2026-11-17",
+  "last_updated": "2026-11-18",
   "download_url": "https://github.com/hariomIB/WP-Secure-Guard/releases/latest/download/wp-secure-guard.zip",
   "sections": {
     "description": "Advanced modular WordPress security suite featuring User Enumeration Protection, Brute-Force Rate Limiting, Custom Login URL, Native TOTP 2FA, XML-RPC Shield, WAF Firewall, Sensitive File Protection, and Activity Logs.",
-    "changelog": "<h4>1.0.0</h4><ul><li>Initial stable release with 20 modular security protections.</li><li>Custom Login URL & Direct Endpoint Blocking.</li><li>Sensitive File Protection & Directory Listing Shield.</li><li>Remote Auto-Updater integrated.</li></ul>"
+    "changelog": "<h4>1.0.1</h4><ul><li><strong>Cookie Security Hardening:</strong> Enforces <code>HttpOnly</code>, <code>SameSite=Lax/Strict</code>, and <code>Secure</code> flags across all outgoing cookies, completely resolving Netsparker/Invicti and OWASP ZAP CWE-1004 / CWE-1275 vulnerabilities (including third-party cookies like <code>icwp-wpsf-notbot</code>).</li><li><strong>Theme Directory Direct Execution Protection:</strong> Prevents HTTP 500 Internal Server Errors when vulnerability scanners or bots probe theme directories (such as <code>/wp-content/themes/abdos/</code>) or raw PHP template files.</li><li><strong>GitHub ZIP Architecture Fix:</strong> Streamlined repository root so GitHub repository archives (<code>WP-Secure-Guard-main.zip</code>) install and activate cleanly without any header validation errors.</li></ul><h4>1.0.0</h4><ul><li>Initial stable release with 20 modular security protections.</li><li>Custom Login URL & Direct Endpoint Blocking.</li><li>Sensitive File Protection & Directory Listing Shield.</li><li>Remote Auto-Updater integrated.</li></ul>"
   }
 }

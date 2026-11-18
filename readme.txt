@@ -5,7 +5,7 @@ Tags: security, firewall, 2fa, login security, user enumeration, waf, activity l
 Requires at least: 5.8
 Tested up to: 6.7
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -90,6 +90,12 @@ When deactivated, all security hooks stop immediately. When uninstalled, you can
 6. Threat Monitoring, Application Firewall (WAF) logs, and PHP hardening audit.
 
 == Changelog ==
+
+= 1.0.1 =
+* New: Added Cookie Security & Scanner Hardening module (WPSG_Cookie_Security) enforcing HttpOnly, SameSite (Lax/Strict), and Secure attributes across all outgoing HTTP cookies (resolving Netsparker, Invicti, Acunetix, and OWASP ZAP CWE-1004 / CWE-1275 findings on third-party cookies like icwp-wpsf-notbot).
+* Fix: Added Direct Theme and Plugin Directory Execution Protection in .htaccess and PHP filter, completely eliminating HTTP 500 Internal Server Errors when vulnerability scanners or bots probe theme directories (e.g. /wp-content/themes/{theme}/) or raw template files.
+* Fix: Streamlined and flattened repository architecture so that GitHub repository ZIP archives (WP-Secure-Guard-main.zip) install and activate seamlessly without "No valid plugins were found" or "invalid header" errors.
+* New: Integrated native Remote Auto-Updater (WPSG_Updater) enabling 1-click update notifications directly in the WordPress admin dashboard across all client websites.
 
 = 1.0.0 =
 * Initial public release.

@@ -3,7 +3,7 @@
  * Plugin Name:       WP Secure Guard
  * Plugin URI:        https://wordpress.org/plugins/wp-secure-guard/
  * Description:       Advanced modular WordPress security suite featuring User Enumeration Protection, Brute-Force Rate Limiting, Custom Login URL, Native TOTP 2FA, XML-RPC Shield, WAF Firewall, Sensitive File Protection, and Activity Logs.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Requires at least: 5.8
  * Requires PHP:      7.4
  * Author:            WP Secure Guard Team
@@ -21,7 +21,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'WPSG_VERSION', '1.0.0' );
+define( 'WPSG_VERSION', '1.0.1' );
 define( 'WPSG_PLUGIN_FILE', __FILE__ );
 define( 'WPSG_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'WPSG_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
