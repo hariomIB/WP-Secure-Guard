@@ -34,16 +34,17 @@ class WPSG_Updater {
 	const CACHE_KEY = 'wpsg_remote_version_info';
 
 	/**
-	 * Cache duration in seconds (12 hours).
+	 * Cache duration in seconds (1 hour).
 	 */
-	const CACHE_DURATION = 43200;
+	const CACHE_DURATION = 3600;
 
 	/**
 	 * Initialize updater hooks.
 	 */
 	public static function init() {
-		// 1. Inject update information into WordPress plugins update transient.
+		// 1. Inject update information into WordPress plugins update transient (both saving and reading).
 		add_filter( 'pre_set_site_transient_update_plugins', array( __CLASS__, 'check_for_update' ) );
+		add_filter( 'site_transient_update_plugins', array( __CLASS__, 'check_for_update' ) );
 
 		// 2. Supply plugin information popup details (View version details modal).
 		add_filter( 'plugins_api', array( __CLASS__, 'plugin_info' ), 20, 3 );
@@ -51,7 +52,10 @@ class WPSG_Updater {
 		// 3. Ensure post-install directory naming is always 'wp-secure-guard'.
 		add_filter( 'upgrader_post_install', array( __CLASS__, 'post_install' ), 10, 3 );
 
-		// 4. Listen for manual "Check for Updates" trigger in WP Secure Guard.
+		// 4. Add "Check for Updates" link to plugin meta links on plugins.php.
+		add_filter( 'plugin_row_meta', array( __CLASS__, 'add_row_meta_links' ), 10, 2 );
+
+		// 5. Listen for manual "Check for Updates" trigger in WP Secure Guard.
 		add_action( 'admin_init', array( __CLASS__, 'handle_manual_update_check' ) );
 	}
 
@@ -62,11 +66,26 @@ class WPSG_Updater {
 	 * @return object
 	 */
 	public static function check_for_update( $transient ) {
-		if ( empty( $transient->checked ) ) {
-			return $transient;
+		if ( ! is_object( $transient ) ) {
+			$transient = new stdClass();
 		}
 
-		$remote = self::get_remote_version_info();
+		if ( ! isset( $transient->response ) || ! is_array( $transient->response ) ) {
+			$transient->response = array();
+		}
+
+		if ( ! isset( $transient->no_update ) || ! is_array( $transient->no_update ) ) {
+			$transient->no_update = array();
+		}
+
+		// Detect if force refresh is requested (e.g. from Dashboard -> Updates "Check Again").
+		$force_refresh = false;
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! empty( $_GET['force-check'] ) || ( isset( $_GET['wpsg_action'] ) && 'check_updates' === $_GET['wpsg_action'] ) ) {
+			$force_refresh = true;
+		}
+
+		$remote = self::get_remote_version_info( $force_refresh );
 		if ( ! $remote || empty( $remote['version'] ) ) {
 			return $transient;
 		}
@@ -89,6 +108,21 @@ class WPSG_Updater {
 			);
 
 			$transient->response[ $plugin_file ] = $update_data;
+			if ( isset( $transient->no_update[ $plugin_file ] ) ) {
+				unset( $transient->no_update[ $plugin_file ] );
+			}
+
+			// Also set canonical key if folder name differs (e.g. WP-Secure-Guard-main).
+			$canonical_key = 'wp-secure-guard/wp-secure-guard.php';
+			if ( $plugin_file !== $canonical_key ) {
+				$canonical_data = clone $update_data;
+				$canonical_data->id     = $canonical_key;
+				$canonical_data->plugin = $canonical_key;
+				$transient->response[ $canonical_key ] = $canonical_data;
+				if ( isset( $transient->no_update[ $canonical_key ] ) ) {
+					unset( $transient->no_update[ $canonical_key ] );
+				}
+			}
 		} else {
 			$no_update_data = (object) array(
 				'id'            => $plugin_file,
@@ -100,6 +134,9 @@ class WPSG_Updater {
 			);
 
 			$transient->no_update[ $plugin_file ] = $no_update_data;
+			if ( isset( $transient->response[ $plugin_file ] ) ) {
+				unset( $transient->response[ $plugin_file ] );
+			}
 		}
 
 		return $transient;
@@ -157,7 +194,7 @@ class WPSG_Updater {
 
 		$plugin_file = plugin_basename( WPSG_PLUGIN_FILE );
 
-		if ( ! isset( $hook_extra['plugin'] ) || $hook_extra['plugin'] !== $plugin_file ) {
+		if ( ! isset( $hook_extra['plugin'] ) || ( $hook_extra['plugin'] !== $plugin_file && 'wp-secure-guard/wp-secure-guard.php' !== $hook_extra['plugin'] ) ) {
 			return $result;
 		}
 
@@ -176,8 +213,75 @@ class WPSG_Updater {
 		if ( ! is_plugin_active( $plugin_file ) ) {
 			activate_plugin( $plugin_file );
 		}
+		if ( 'wp-secure-guard/wp-secure-guard.php' !== $plugin_file && ! is_plugin_active( 'wp-secure-guard/wp-secure-guard.php' ) ) {
+			activate_plugin( 'wp-secure-guard/wp-secure-guard.php' );
+		}
 
 		return $result;
+	}
+
+	/**
+	 * Add "Check for Updates" link to plugin row meta links on plugins.php.
+	 *
+	 * @param string[] $links Array of plugin action links.
+	 * @param string   $file  Path to the plugin file relative to plugins directory.
+	 * @return string[]
+	 */
+	public static function add_row_meta_links( $links, $file ) {
+		$plugin_file = plugin_basename( WPSG_PLUGIN_FILE );
+		if ( $file === $plugin_file || 'wp-secure-guard/wp-secure-guard.php' === $file ) {
+			$check_url = wp_nonce_url(
+				add_query_arg(
+					array(
+						'wpsg_action' => 'check_updates',
+						'return'      => 'plugins',
+					),
+					admin_url( 'plugins.php' )
+				),
+				'wpsg_manual_update_check'
+			);
+
+			$links[] = sprintf(
+				'<a href="%s" style="color: #2271b1; font-weight: 600;"><span class="dashicons dashicons-update" style="font-size:14px;vertical-align:text-top;margin-right:2px;"></span>%s</a>',
+				esc_url( $check_url ),
+				esc_html__( 'Check for Updates', 'wp-secure-guard' )
+			);
+		}
+
+		return $links;
+	}
+
+	/**
+	 * Handle manual "Check for Updates" button click.
+	 */
+	public static function handle_manual_update_check() {
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['wpsg_action'] ) || 'check_updates' !== $_GET['wpsg_action'] ) {
+			return;
+		}
+
+		if ( ! current_user_can( 'update_plugins' ) ) {
+			return;
+		}
+
+		check_admin_referer( 'wpsg_manual_update_check' );
+
+		// Clear cache and re-fetch immediately.
+		delete_transient( self::CACHE_KEY );
+		delete_site_transient( 'update_plugins' );
+		self::get_remote_version_info( true );
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$return = isset( $_GET['return'] ) ? sanitize_key( wp_unslash( $_GET['return'] ) ) : '';
+		if ( 'plugins' === $return ) {
+			wp_safe_redirect( add_query_arg( array( 'wpsg_updated_checked' => '1' ), admin_url( 'plugins.php' ) ) );
+			exit;
+		}
+
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : 'wpsg-dashboard';
+		wp_safe_redirect( add_query_arg( array( 'page' => $page, 'wpsg_updated_checked' => '1' ), admin_url( 'admin.php' ) ) );
+		exit;
 	}
 
 	/**
@@ -268,27 +372,4 @@ class WPSG_Updater {
 		return false;
 	}
 
-	/**
-	 * Handle manual "Check for Updates" button click.
-	 */
-	public static function handle_manual_update_check() {
-		if ( ! isset( $_GET['wpsg_action'] ) || 'check_updates' !== $_GET['wpsg_action'] ) {
-			return;
-		}
-
-		if ( ! current_user_can( 'update_plugins' ) ) {
-			return;
-		}
-
-		check_admin_referer( 'wpsg_manual_update_check' );
-
-		// Clear cache and re-fetch.
-		delete_transient( self::CACHE_KEY );
-		delete_site_transient( 'update_plugins' );
-		self::get_remote_version_info( true );
-
-		$page = isset( $_GET['page'] ) ? sanitize_key( wp_unslash( $_GET['page'] ) ) : 'wpsg-dashboard';
-		wp_safe_redirect( add_query_arg( array( 'page' => $page, 'wpsg_updated_checked' => '1' ), admin_url( 'admin.php' ) ) );
-		exit;
-	}
 }
