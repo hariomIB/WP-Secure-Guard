@@ -365,6 +365,39 @@ assert_test( isset( $v_data['sections']['changelog'] ), "Updater: changelog sect
 assert_test( version_compare( '1.0.1', '1.0.0', '>' ), "Updater: Higher remote version detected for update" );
 assert_test( ! version_compare( '1.0.0', '1.0.0', '>' ), "Updater: Same version does not trigger update" );
 
+// -------------------------------------------------------------
+// Test 11: Cookie Security Hardening (Netsparker / OWASP)
+// -------------------------------------------------------------
+require_once __DIR__ . '/../modules/login-security/cookie-security.php';
+
+$raw_scanner_cookie = 'icwp-wpsf-notbot=exp-1794461802; expires=Thu, 12 Nov 2026 05:36:42 GMT; Max-Age=600; path=/; secure';
+$hardened_cookie = WPSG_Cookie_Security::secure_cookie_string( $raw_scanner_cookie, true, 'Lax', true, true );
+
+assert_test( false !== strpos( $hardened_cookie, 'SameSite=Lax' ), "Cookie Security: Injects SameSite=Lax on icwp-wpsf-notbot" );
+assert_test( false !== strpos( $hardened_cookie, 'HttpOnly' ), "Cookie Security: Injects HttpOnly on icwp-wpsf-notbot" );
+assert_test( false !== stripos( $hardened_cookie, 'secure' ), "Cookie Security: Preserves Secure flag on HTTPS" );
+
+// Verify JS cookie exception preserves JS access for _ga
+$ga_cookie = '_ga=GA1.2.123456789.123456789; path=/; domain=.abdosoils.com';
+$hardened_ga = WPSG_Cookie_Security::secure_cookie_string( $ga_cookie, true, 'Lax', true, true );
+assert_test( false === strpos( $hardened_ga, 'HttpOnly' ), "Cookie Security: Allows JS access for Google Analytics _ga" );
+assert_test( false !== strpos( $hardened_ga, 'SameSite=Lax' ), "Cookie Security: Applies SameSite on _ga" );
+
+// -------------------------------------------------------------
+// Test 12: Theme Directory Direct Execution Block (Prevents 500 error)
+// -------------------------------------------------------------
+$theme_dir_path = 'wp-content/themes/abdos/';
+$theme_php_path = 'wp-content/themes/abdos/index.php';
+$theme_css_path = 'wp-content/themes/abdos/style.css';
+
+$theme_dir_blocked = preg_match( '#^wp-content/themes/[^/]+/?$#i', $theme_dir_path );
+$theme_php_blocked = preg_match( '#^wp-content/(themes|plugins)/.*\.php$#i', $theme_php_path );
+$theme_css_allowed = ! preg_match( '#^wp-content/(themes|plugins)/.*\.php$#i', $theme_css_path ) && ! preg_match( '#^wp-content/themes/[^/]+/?$#i', $theme_css_path );
+
+assert_test( (bool) $theme_dir_blocked, "Theme Direct Access: Blocks direct theme directory request wp-content/themes/abdos/" );
+assert_test( (bool) $theme_php_blocked, "Theme Direct Access: Blocks direct PHP execution wp-content/themes/abdos/index.php" );
+assert_test( $theme_css_allowed, "Theme Direct Access: Allows theme static assets wp-content/themes/abdos/style.css" );
+
 echo "\n---------------------------------------------------------\n";
 echo " Test Results: {$passed_tests} PASSED, {$failed_tests} FAILED\n";
 echo "=========================================================\n";

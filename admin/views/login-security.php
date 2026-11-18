@@ -371,6 +371,68 @@ $client_ip = WPSG_Logger::get_client_ip();
 		</div>
 	</div>
 
+	<!-- Feature: Cookie Security Hardening (HttpOnly & SameSite) -->
+	<div class="wpsg-card">
+		<div class="wpsg-card-header">
+			<h2>
+				<span class="dashicons dashicons-shield"></span>
+				<?php esc_html_e( 'Cookie Security & Scanner Hardening (HttpOnly, SameSite & Secure)', 'wp-secure-guard' ); ?>
+			</h2>
+			<p class="description">
+				<?php esc_html_e( 'Enforces HttpOnly, SameSite, and Secure flags on all outgoing cookies (including third-party security plugin cookies like icwp-wpsf-notbot). Resolves Netsparker, Invicti, Acunetix, and OWASP ZAP cookie vulnerability findings (CWE-1004 & CWE-1275).', 'wp-secure-guard' ); ?>
+			</p>
+		</div>
+
+		<div class="wpsg-setting-row">
+			<div class="wpsg-setting-toggle">
+				<label class="wpsg-switch">
+					<input type="hidden" name="wpsg[cookie_security_enable]" value="0" />
+					<input type="checkbox" name="wpsg[cookie_security_enable]" value="1" <?php checked( $settings['cookie_security_enable'] ); ?> />
+					<span class="wpsg-slider"></span>
+				</label>
+			</div>
+			<div class="wpsg-setting-info">
+				<h3 class="wpsg-setting-title"><?php esc_html_e( 'Enable Cookie Security Hardening', 'wp-secure-guard' ); ?></h3>
+				<p class="wpsg-setting-text">
+					<?php esc_html_e( 'Automatically inspects all HTTP Set-Cookie headers and injects missing SameSite, HttpOnly, and Secure flags before output.', 'wp-secure-guard' ); ?>
+				</p>
+				<span class="wpsg-pill wpsg-pill-recommended"><?php esc_html_e( 'Netsparker & OWASP Compliant', 'wp-secure-guard' ); ?></span>
+			</div>
+		</div>
+
+		<div class="wpsg-sub-settings">
+			<div class="wpsg-field-group">
+				<label for="wpsg_cookie_samesite_policy"><strong><?php esc_html_e( 'SameSite Policy:', 'wp-secure-guard' ); ?></strong></label>
+				<select id="wpsg_cookie_samesite_policy" name="wpsg[cookie_samesite_policy]">
+					<option value="Lax" <?php selected( $settings['cookie_samesite_policy'], 'Lax' ); ?>><?php esc_html_e( 'Lax (Recommended - Balanced security & seamless user experience)', 'wp-secure-guard' ); ?></option>
+					<option value="Strict" <?php selected( $settings['cookie_samesite_policy'], 'Strict' ); ?>><?php esc_html_e( 'Strict (Highest security - cookies restricted strictly to first-party requests)', 'wp-secure-guard' ); ?></option>
+				</select>
+			</div>
+
+			<div class="wpsg-field-group" style="margin-top:10px;">
+				<label>
+					<input type="hidden" name="wpsg[cookie_httponly_enable]" value="0" />
+					<input type="checkbox" name="wpsg[cookie_httponly_enable]" value="1" <?php checked( $settings['cookie_httponly_enable'] ); ?> />
+					<strong><?php esc_html_e( 'Enforce HttpOnly flag', 'wp-secure-guard' ); ?></strong>
+				</label>
+				<p class="description">
+					<?php esc_html_e( 'Prevents client-side scripts from reading sensitive cookies, eliminating XSS session-hijacking risks.', 'wp-secure-guard' ); ?>
+				</p>
+			</div>
+
+			<div class="wpsg-field-group" style="margin-top:10px;">
+				<label>
+					<input type="hidden" name="wpsg[cookie_secure_enable]" value="0" />
+					<input type="checkbox" name="wpsg[cookie_secure_enable]" value="1" <?php checked( $settings['cookie_secure_enable'] ); ?> />
+					<strong><?php esc_html_e( 'Enforce Secure flag on HTTPS', 'wp-secure-guard' ); ?></strong>
+				</label>
+				<p class="description">
+					<?php esc_html_e( 'Ensures cookies are only transmitted over encrypted SSL/TLS connections.', 'wp-secure-guard' ); ?>
+				</p>
+			</div>
+		</div>
+	</div>
+
 	<div class="wpsg-form-actions">
 		<button type="submit" class="button button-primary button-large">
 			<span class="dashicons dashicons-saved" style="vertical-align:text-bottom;margin-right:4px;"></span>

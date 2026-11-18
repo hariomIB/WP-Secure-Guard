@@ -3,7 +3,7 @@
 [![License: GPL-2.0-or-later](https://img.shields.io/badge/License-GPL%20v2%2B-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
 [![WordPress](https://img.shields.io/badge/WordPress-%3E%3D%205.8-blue.svg)](https://wordpress.org/)
 [![PHP Version](https://img.shields.io/badge/PHP-%3E%3D%207.4-8892BF.svg)](https://php.net/)
-[![Tests](https://img.shields.io/badge/Tests-64%2F64%20Passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/Tests-72%2F72%20Passing-brightgreen.svg)](tests/)
 
 **WP Secure Guard** is an advanced, lightweight, modular WordPress security suite designed to protect websites against brute-force attacks, unauthorized user enumeration, malicious file uploads, information disclosure, and web exploits—without cloud lock-in, bloat, or third-party telemetry.
 

@@ -268,6 +268,7 @@ class WPSG_Dashboard {
 			WPSG_Password_Policy::get_status(),
 			WPSG_Custom_Login_URL::get_status(),
 			WPSG_User_Registration::get_status(),
+			WPSG_Cookie_Security::get_status(),
 
 			// Category 3: File Security
 			WPSG_File_Editor::get_status(),

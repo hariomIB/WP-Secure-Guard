@@ -61,6 +61,9 @@ class WPSG_Sensitive_Files {
 			'#^wp-config(-sample)?(\.php)?(\.(bak|backup|old|save|txt|orig|temp|tmp|swp|swo))?$#i',
 			// Logs, SQL dumps, shell scripts, archive backups
 			'#\.(sql|sql\.gz|bak|backup|old|save|log|ini|conf|sh|bash|ps1|swp|swo|tar|gz|zip|7z|rar)$#i',
+			// Direct access to theme directories or direct PHP file execution in themes/plugins (prevents 500 fatal errors)
+			'#^wp-content/themes/[^/]+/?$#i',
+			'#^wp-content/(themes|plugins)/.*\.php$#i',
 		);
 
 		foreach ( $blocked_patterns as $pattern ) {
@@ -105,8 +108,8 @@ class WPSG_Sensitive_Files {
 		}
 
 		$content = file_get_contents( $root_htaccess );
-		// If marker missing or old rules don't contain composer/readme, reinstall rules.
-		if ( false === strpos( $content, self::HTACCESS_MARKER ) || false === strpos( $content, 'composer' ) ) {
+		// If marker missing or old rules don't contain themes block rule, reinstall rules.
+		if ( false === strpos( $content, self::HTACCESS_MARKER ) || false === strpos( $content, 'themes' ) ) {
 			self::install_htaccess_rules();
 		}
 	}
@@ -163,6 +166,15 @@ class WPSG_Sensitive_Files {
 			'        Deny from all',
 			'    </IfModule>',
 			'</FilesMatch>',
+			'',
+			'# 5. Block direct HTTP execution of PHP files in themes & plugins (prevents 500 fatal errors)',
+			'<IfModule mod_rewrite.c>',
+			'    RewriteEngine On',
+			'    RewriteCond %{REQUEST_URI} !/wp-admin/admin-ajax\.php [NC]',
+			'    RewriteCond %{REQUEST_URI} !/wp-admin/ [NC]',
+			'    RewriteCond %{REQUEST_URI} ^.*/wp-content/(themes|plugins)/.*\.php$ [NC]',
+			'    RewriteRule .* - [F,L]',
+			'</IfModule>',
 		);
 
 		require_once ABSPATH . 'wp-admin/includes/file.php';

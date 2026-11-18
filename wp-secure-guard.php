@@ -51,6 +51,7 @@ require_once WPSG_PLUGIN_DIR . 'modules/login-security/common-usernames.php';
 require_once WPSG_PLUGIN_DIR . 'modules/login-security/password-policy.php';
 require_once WPSG_PLUGIN_DIR . 'modules/login-security/custom-login-url.php';
 require_once WPSG_PLUGIN_DIR . 'modules/login-security/user-registration.php';
+require_once WPSG_PLUGIN_DIR . 'modules/login-security/cookie-security.php';
 
 // 4. File & Server Security Modules (Features 11-15).
 require_once WPSG_PLUGIN_DIR . 'modules/file-security/file-editor.php';
@@ -154,6 +155,7 @@ final class WP_Secure_Guard {
 		WPSG_Password_Policy::init();
 		WPSG_Custom_Login_URL::init();
 		WPSG_User_Registration::init();
+		WPSG_Cookie_Security::init();
 
 		// Category 3: File Security
 		WPSG_File_Editor::init();

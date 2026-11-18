@@ -57,6 +57,10 @@ class WPSG_Settings {
 			'custom_login_enable'          => false,
 			'custom_login_slug'            => 'login-controller',
 			'disable_user_registration'    => false,
+			'cookie_security_enable'       => true,
+			'cookie_samesite_policy'       => 'Lax',
+			'cookie_httponly_enable'       => true,
+			'cookie_secure_enable'         => true,
 
 			// 3. File Security
 			'disallow_file_edit_enforce'   => true,
@@ -154,6 +158,10 @@ class WPSG_Settings {
 				'custom_login_enable',
 				'custom_login_slug',
 				'disable_user_registration',
+				'cookie_security_enable',
+				'cookie_samesite_policy',
+				'cookie_httponly_enable',
+				'cookie_secure_enable',
 			),
 			'file_security' => array(
 				'disallow_file_edit_enforce',
@@ -267,6 +275,9 @@ class WPSG_Settings {
 			'password_require_symbols',
 			'custom_login_enable',
 			'disable_user_registration',
+			'cookie_security_enable',
+			'cookie_httponly_enable',
+			'cookie_secure_enable',
 			'disallow_file_edit_enforce',
 			'uploads_php_protect',
 			'sensitive_files_protect',
@@ -300,6 +311,10 @@ class WPSG_Settings {
 		$clean['waf_mode'] = isset( $input['waf_mode'] ) && in_array( $input['waf_mode'], array( 'block', 'monitor' ), true )
 			? sanitize_key( $input['waf_mode'] )
 			: 'block';
+
+		$clean['cookie_samesite_policy'] = isset( $input['cookie_samesite_policy'] ) && in_array( $input['cookie_samesite_policy'], array( 'Lax', 'Strict', 'None' ), true )
+			? sanitize_text_field( $input['cookie_samesite_policy'] )
+			: 'Lax';
 
 		// Custom login slug
 		if ( isset( $input['custom_login_slug'] ) ) {
